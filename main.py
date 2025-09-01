@@ -29,7 +29,7 @@ class Stopwatch:
         self.window.attributes("-transparentcolor", "white")
         self.window.configure(bg="white")
 
-        self.label = tk.Label(self.window, text="0.00", fg=color, bg="white", font=FONT)
+        self.label = tk.Label(self.window, text="0.00", fg=color, bg="black", font=FONT)
         self.label.pack()
 
         x = SCREEN_WIDTH - STOPWATCH_WIDTH - MARGIN
