@@ -1,7 +1,7 @@
 import tkinter as tk
 import time
 from screeninfo import get_monitors 
-import keyboard
+import keyboard, mouse
 import ctypes
 
 ctypes.windll.shcore.SetProcessDpiAwareness(1)  # Per-monitor DPI awareness
@@ -34,7 +34,10 @@ class Stopwatch:
 
         x = SCREEN_WIDTH - STOPWATCH_WIDTH - MARGIN
         y = MARGIN + y_offset
+       
         self.window.geometry(f"{STOPWATCH_WIDTH}x{STOPWATCH_HEIGHT}+{x}+{y}")
+
+        self.window.deiconify() 
 
     def update(self):
         elapsed = time.time() - self.start_time
@@ -54,11 +57,18 @@ class StopwatchApp:
         self.stopwatches = []
 
         # Hotkeys
-        keyboard.add_hotkey("ctrl+alt+up", self.add_stopwatch)
-        keyboard.add_hotkey("ctrl+alt+down", self.remove_oldest)
+        add_stopwatch_hotkey = "ctrl+alt+W"
+        remove_stopwatch_hotkey = "ctrl+alt+S"
+
+        keyboard.add_hotkey(add_stopwatch_hotkey, self.add_stopwatch)
+        keyboard.add_hotkey(remove_stopwatch_hotkey, self.remove_oldest)
+        keyboard.add_hotkey("ctrl+alt+R", self.remove_all)
+
+        mouse.on_button(self.add_stopwatch, buttons=('x2',), types=('down',))
+        mouse.on_button(self.remove_oldest, buttons=('x',), types=('down',))
 
         self.update_all()
-        print("Press Ctrl+Alt+Up to add stopwatch, Ctrl+Alt+Down to remove.")
+        print(f"Press {add_stopwatch_hotkey} to add stopwatch, {remove_stopwatch_hotkey} to remove.")
 
     def add_stopwatch(self):
         y_offset = len(self.stopwatches) * (STOPWATCH_HEIGHT + MARGIN)
@@ -74,6 +84,10 @@ class StopwatchApp:
             for i, s in enumerate(self.stopwatches):
                 y = i * (STOPWATCH_HEIGHT + MARGIN)
                 s.move_to(y)
+    def remove_all(self):
+        while self.stopwatches:
+            sw = self.stopwatches.pop(0)
+            sw.destroy()
 
     def update_all(self):
         for sw in self.stopwatches:
